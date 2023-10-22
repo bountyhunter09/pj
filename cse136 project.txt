@@ -1,0 +1,143 @@
+#include <stdio.h>
+#include <string.h>
+
+struct Contact {
+    char name[50];
+    char phone[20];
+    char email[50];
+};
+
+void addContact(struct Contact contacts[], int *count);
+void listContacts(const struct Contact contacts[], int count);
+void searchContact(const struct Contact contacts[], int count, const char *query);
+void editContact(struct Contact contacts[], int count, const char *name);
+void deleteContact(struct Contact contacts[], int *count, const char *name);
+
+int main() {
+    struct Contact contacts[100]; // You can adjust the size based on your needs
+    int count = 0;
+    int choice;
+
+    while (1) {
+        printf("\n\t**** Contact Management System ****\n");
+        printf("\n\t\t[1] Add a new Contact\n");
+        printf("\t\t[2] List all Contacts\n");
+        printf("\t\t[3] Search for Contact\n");
+        printf("\t\t[4] Edit a Contact\n");
+        printf("\t\t[5] Delete a Contact\n");
+        printf("\t\t[0] Exit\n");
+        printf("\nEnter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 0:
+                printf("Goodbye!\n");
+                return 0;
+            case 1:
+                addContact(contacts, &count);
+                break;
+            case 2:
+                listContacts(contacts, count);
+                break;
+            case 3: {
+                char query[50];
+                printf("Enter the name or part of the name to search for: ");
+                scanf(" %[^\n]", query);
+                searchContact(contacts, count, query);
+                break;
+            }
+            case 4: {
+                char name[50];
+                printf("Enter the name of the contact to edit: ");
+                scanf(" %[^\n]", name);
+                editContact(contacts, count, name);
+                break;
+            }
+            case 5: {
+                char name[50];
+                printf("Enter the name of the contact to delete: ");
+                scanf(" %[^\n]", name);
+                deleteContact(contacts, &count, name);
+                break;
+            }
+            default:
+                printf("Invalid choice. Try again.\n");
+        }
+    }
+
+    return 0;
+}
+
+void addContact(struct Contact contacts[], int *count) {
+    if (*count >= 100) {
+        printf("Contact storage is full. Delete some contacts before adding new ones.\n");
+        return;
+    }
+
+    struct Contact newContact;
+    printf("Enter contact details:\n");
+    printf("Name: ");
+    scanf(" %[^\n]", newContact.name);
+    printf("Phone: ");
+    scanf(" %[^\n]", newContact.phone);
+    printf("Email: ");
+    scanf(" %[^\n]", newContact.email);
+
+    contacts[*count] = newContact;
+    (*count)++;
+    printf("Contact added successfully!\n");
+}
+
+void listContacts(const struct Contact contacts[], int count) {
+    printf("\nList of Contacts:\n");
+    for (int i = 0; i < count; i++) {
+        printf("Name: %s\n", contacts[i].name);
+        printf("Phone: %s\n", contacts[i].phone);
+        printf("Email: %s\n", contacts[i].email);
+        printf("-------------------\n");
+    }
+}
+
+void searchContact(const struct Contact contacts[], int count, const char *query) {
+    printf("\nSearch Results:\n");
+    for (int i = 0; i < count; i++) {
+        if (strstr(contacts[i].name, query) != NULL) {
+            printf("Name: %s\n", contacts[i].name);
+            printf("Phone: %s\n", contacts[i].phone);
+            printf("Email: %s\n", contacts[i].email);
+            printf("-------------------\n");
+        }
+    }
+}
+
+void editContact(struct Contact contacts[], int count, const char *name) {
+    for (int i = 0; i < count; i++) {
+        if (strcmp(contacts[i].name, name) == 0) {
+            printf("Enter new details for %s:\n", name);
+            printf("Name: ");
+            scanf(" %[^\n]", contacts[i].name);
+            printf("Phone: ");
+            scanf(" %[^\n]", contacts[i].phone);
+            printf("Email: ");
+            scanf(" %[^\n]", contacts[i].email);
+            printf("Contact updated successfully!\n");
+            return;
+        }
+    }
+    printf("Contact not found!\n");
+}
+
+void deleteContact(struct Contact contacts[], int *count, const char *name) {
+    for (int i = 0; i < *count; i++) {
+        if (strcmp(contacts[i].name, name) == 0) {
+            // Shift all elements after the deleted contact to fill the gap
+            for (int j = i; j < (*count - 1); j++) {
+                contacts[j] = contacts[j + 1];
+            }
+            (*count)--;
+            printf("Contact deleted successfully!\n");
+            return;
+        }
+    }
+    printf("Contact not found!\n");
+}
